@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KekeYi — UI Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --yellow: #F2B705;
+    --yellow-deep: #D99E00;
+    --ink: #1B1B2F;
+    --ink-soft: #3A3A52;
+    --cream: #FAF6ED;
+    --terracotta: #8B5E34;
+    --terracotta-soft: #C99A6C;
+    --green: #2F7A4D;
+    --green-soft: #E4F2E9;
+    --red: #C13B3B;
+    --red-soft: #FBEAEA;
+    --line: #E8E1D2;
+    --shadow: 0 2px 8px rgba(27,27,47,0.06);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #EDE7D8;
+    color: var(--ink);
+    padding: 40px 20px 100px;
+  }
+
+  /* ---- Page chrome ---- */
+  .page-header {
+    max-width: 1400px;
+    margin: 0 auto 36px;
+  }
+  .page-header .eyebrow {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .page-header .eyebrow svg { width: 16px; height: 16px; }
+  .page-header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 40px;
+    font-weight: 700;
+    margin-top: 6px;
+    letter-spacing: -0.01em;
+  }
+  .page-header p {
+    margin-top: 8px;
+    color: var(--ink-soft);
+    font-size: 15px;
+    max-width: 640px;
+    line-height: 1.5;
+  }
+
+  .tabs {
+    max-width: 1400px;
+    margin: 28px auto 0;
+    display: flex;
+    gap: 4px;
+    border-bottom: 2px solid var(--line);
+  }
+  .tab-btn {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    padding: 12px 22px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--ink-soft);
+    position: relative;
+    top: 2px;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s;
+  }
+  .tab-btn.active {
+    color: var(--ink);
+    border-bottom: 2px solid var(--yellow);
+  }
+  .tab-btn:hover { color: var(--ink); }
+
+  .flow-wrap {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: none;
+  }
+  .flow-wrap.active { display: block; }
+
+  .strip {
+    display: flex;
+    gap: 28px;
+    overflow-x: auto;
+    padding: 36px 4px 20px;
+    scroll-snap-type: x proximity;
+  }
+  .strip::-webkit-scrollbar { height: 8px; }
+  .strip::-webkit-scrollbar-thumb { background: var(--terracotta-soft); border-radius: 8px; }
+  .strip::-webkit-scrollbar-track { background: transparent; }
+
+  .frame-block {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+    width: 300px;
+  }
+  .frame-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--terracotta);
+    margin-bottom: 10px;
+    letter-spacing: 0.03em;
+  }
+
+  /* ---- Phone frame ---- */
+  .phone {
+    width: 300px;
+    height: 620px;
+    background: var(--ink);
+    border-radius: 40px;
+    padding: 12px;
+    box-shadow: 0 20px 40px rgba(27,27,47,0.18), 0 2px 6px rgba(27,27,47,0.1);
+    position: relative;
+  }
+  .phone::before {
+    content: '';
+    position: absolute;
+    top: 12px; left: 50%;
+    transform: translateX(-50%);
+    width: 90px; height: 18px;
+    background: var(--ink);
+    border-radius: 0 0 14px 14px;
+    z-index: 5;
+  }
+  .screen {
+    width: 100%;
+    height: 100%;
+    background: var(--cream);
+    border-radius: 30px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .statusbar {
+    height: 34px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 22px 0 26px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .screen-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px 18px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .screen-body::-webkit-scrollbar { width: 0; }
+
+  /* ---- Reusable UI atoms ---- */
+  .app-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .keke-mark {
+    width: 26px; height: 26px;
+    flex-shrink: 0;
+  }
+  .app-header .word {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: -0.01em;
+  }
+  .app-header .word span { color: var(--terracotta); }
+
+  .h1local {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  .sub {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+
+  .field-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--terracotta);
+    margin-bottom: 4px;
+  }
+  .field {
+    background: #fff;
+    border: 1.5px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+  }
+  .field.filled { color: var(--ink); font-weight: 500; }
+
+  .btn {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    text-align: center;
+    padding: 14px;
+    border-radius: 14px;
+    cursor: default;
+    border: none;
+    letter-spacing: 0.01em;
+  }
+  .btn-primary { background: var(--ink); color: var(--yellow); }
+  .btn-yellow { background: var(--yellow); color: var(--ink); }
+  .btn-ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--ink); }
+  .btn-danger { background: var(--red-soft); color: var(--red); }
+  .btn-outline-danger { background: transparent; color: var(--red); border: 1.5px solid var(--red); }
+  .btn-sm { padding: 9px; font-size: 12.5px; border-radius: 10px; }
+  .btn-link { text-align: center; font-size: 12.5px; font-weight: 600; color: var(--ink-soft); text-decoration: underline; }
+
+  .row2 { display: flex; gap: 10px; }
+  .row2 > * { flex: 1; }
+
+  .card {
+    background: #fff;
+    border: 1.5px solid var(--line);
+    border-radius: 16px;
+    padding: 14px;
+  }
+  .card.tight { padding: 12px 14px; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .badge.ok { background: var(--green-soft); color: var(--green); }
+  .badge.wait { background: #FDF1D6; color: var(--yellow-deep); }
+  .badge.off { background: #EEEAE0; color: var(--ink-soft); }
+
+  .map {
+    background: linear-gradient(135deg, #E4E9DD 0%, #D8DFCB 100%);
+    border-radius: 16px;
+    height: 150px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .map .roads {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(255,255,255,0.5) 1px, transparent 1px);
+    background-size: 30px 30px;
+    opacity: 0.6;
+  }
+  .map .route {
+    position: absolute;
+    width: 68%; height: 2.5px;
+    background: repeating-linear-gradient(90deg, var(--terracotta) 0 6px, transparent 6px 11px);
+    top: 55%; left: 16%;
+    transform: rotate(-14deg);
+  }
+  .map .pin {
+    position: absolute;
+    width: 22px; height: 22px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow);
+  }
+  .map .pin.a { background: var(--ink); top: 40%; left: 20%; }
+  .map .pin.b { background: var(--terracotta); top: 60%; left: 72%; }
+  .map .pin span { transform: rotate(45deg); font-size: 9px; }
+  .map .keke-dot {
+    position: absolute;
+    width: 30px; height: 30px;
+    top: 48%; left: 46%;
+  }
+
+  .stars { color: var(--yellow-deep); font-size: 13px; letter-spacing: 1px; }
+  .stars.big { font-size: 26px; letter-spacing: 4px; }
+
+  .driver-row {
+    display: flex; align-items: center; gap: 10px;
+    background: #fff; border: 1.5px solid var(--line);
+    border-radius: 14px; padding: 10px 12px;
+  }
+  .avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--terracotta-soft);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: #fff; font-size: 14px;
+    flex-shrink: 0;
+  }
+  .driver-row .info { flex: 1; }
+  .driver-row .name { font-weight: 600; font-size: 13.5px; }
+  .driver-row .meta { font-size: 11.5px; color: var(--ink-soft); margin-top: 1px; }
+  .driver-row .dist { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 13px; color: var(--terracotta); text-align: right; }
+
+  .divider { height: 1px; background: var(--line); margin: 2px 0; }
+
+  .fare-display {
+    text-align: center;
+    padding: 6px 0;
+  }
+  .fare-display .amount {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 34px;
+    letter-spacing: -0.01em;
+  }
+  .fare-display .range {
+    font-size: 12px; color: var(--ink-soft); margin-top: 2px;
+  }
+
+  .stat-grid { display: flex; gap: 10px; }
+  .stat-box {
+    flex: 1; background: #fff; border: 1.5px solid var(--line);
+    border-radius: 14px; padding: 12px; text-align: center;
+  }
+  .stat-box .num { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 19px; }
+  .stat-box .lbl { font-size: 10px; color: var(--ink-soft); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.03em; }
+
+  .role-pick {
+    display: flex; flex-direction: column; gap: 10px; margin-top: 8px;
+  }
+  .role-card {
+    border: 2px solid var(--line);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .role-card.sel { border-color: var(--ink); background: #fff; }
+  .role-card .ricon { font-size: 22px; }
+  .role-card .rtitle { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 14.5px; }
+  .role-card .rsub { font-size: 11.5px; color: var(--ink-soft); }
+
+  .toast-banner {
+    background: var(--ink); color: var(--yellow);
+    border-radius: 14px; padding: 12px 14px;
+    font-size: 12.5px; font-weight: 500;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .otp-boxes { display: flex; gap: 8px; }
+  .otp-boxes .d {
+    flex: 1; aspect-ratio: 1;
+    background: #fff; border: 1.5px solid var(--line); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 17px;
+  }
+
+  .pin-timer {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 15px;
+    color: var(--terracotta);
+  }
+
+  .note-strip {
+    background: #FDF1D6; border: 1px solid #F0DBA0;
+    border-radius: 10px; padding: 9px 11px;
+    font-size: 11px; color: #7A5C05; line-height: 1.4;
+  }
+
+  /* signature keke icon */
+  .keke-icon { display: block; }
+
+  footer-nav { display: none; }
+
+  @media (max-width: 700px) {
+    .page-header h1 { font-size: 30px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="eyebrow">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 17L6 9H16L18 17" stroke="#8B5E34" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7" cy="18" r="2" stroke="#8B5E34" stroke-width="2"/><circle cx="17" cy="18" r="2" stroke="#8B5E34" stroke-width="2"/></svg>
+    KekeYi — UI Prototype
+  </div>
+  <h1>Book a Keke, straight up.</h1>
+  <p>Visual pass on the rider and driver flows — real screens, real states, no more dashed boxes. Scroll each row to walk the sequence.</p>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="showFlow('rider', this)">Rider Flow</button>
+  <button class="tab-btn" onclick="showFlow('driver', this)">Driver Flow</button>
+</div>
+
+<!-- ============ RIDER FLOW ============ -->
+<div class="flow-wrap active" id="flow-rider">
+<div class="strip">
+
+  <!-- 1. Entry / Role select -->
+  <div class="frame-block">
+    <div class="frame-num">01 · CHOOSE ROLE</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body" style="justify-content:center; gap:22px;">
+        <div style="text-align:center;">
+          <svg class="keke-icon" style="margin:0 auto 14px;" width="56" height="56" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="9" width="14" height="7" rx="2" fill="#F2B705" stroke="#1B1B2F" stroke-width="1.4"/><path d="M17 11H20L21 15H17" stroke="#1B1B2F" stroke-width="1.4" stroke-linejoin="round"/><circle cx="7" cy="18" r="2.2" fill="#1B1B2F"/><circle cx="18" cy="18" r="2.2" fill="#1B1B2F"/><path d="M6 9L8 4H12L13 9" stroke="#1B1B2F" stroke-width="1.4" stroke-linejoin="round"/></svg>
+          <div class="h1local">Welcome to<br><span style="color:var(--terracotta)">KekeYi</span></div>
+          <div class="sub" style="margin-top:8px;">Book a Keke in seconds. Fair price, no wahala.</div>
+        </div>
+        <div class="role-pick">
+          <div class="role-card sel">
+            <div class="ricon">🧍</div>
+            <div><div class="rtitle">I'm a Rider</div><div class="rsub">Book Keke rides around Kano</div></div>
+          </div>
+          <div class="role-card">
+            <div class="ricon">🛺</div>
+            <div><div class="rtitle">I'm a Driver</div><div class="rsub">Get subscribed, get riders</div></div>
+          </div>
+        </div>
+        <div class="btn btn-primary">Continue</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 2. Sign up -->
+  <div class="frame-block">
+    <div class="frame-num">02 · SIGN UP</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body">
+        <div class="h1local">Create your<br>rider account</div>
+        <div>
+          <div class="field-label">Full name</div>
+          <div class="field filled">Abdulsamad Yusuf</div>
+        </div>
+        <div>
+          <div class="field-label">Phone number</div>
+          <div class="field filled">0803 XXX XX12</div>
+        </div>
+        <div>
+          <div class="field-label">Email (optional)</div>
+          <div class="field">you@email.com</div>
+        </div>
+        <div>
+          <div class="field-label">NIN</div>
+          <div class="field">11-digit National ID</div>
+        </div>
+        <div>
+          <div class="field-label">Password</div>
+          <div class="field">••••••••</div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="btn btn-primary">Create Account</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 3. OTP -->
+  <div class="frame-block">
+    <div class="frame-num">03 · VERIFY OTP</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body" style="justify-content:center; gap:20px;">
+        <div style="text-align:center;">
+          <div class="h1local">Verify your<br>number</div>
+          <div class="sub" style="margin-top:6px;">Code sent to 0803 XXX XX12</div>
+        </div>
+        <div class="otp-boxes">
+          <div class="d">4</div><div class="d">2</div><div class="d">7</div><div class="d">1</div>
+        </div>
+        <div class="btn-link" style="text-decoration:none; color:var(--terracotta);">Resend code in 0:42</div>
+        <div class="btn btn-primary">Verify</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 4. Home/Map -->
+  <div class="frame-block">
+    <div class="frame-num">04 · HOME</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body">
+        <div class="app-header">
+          <svg class="keke-mark" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="9" width="14" height="7" rx="2" fill="#F2B705" stroke="#1B1B2F" stroke-width="1.4"/><path d="M17 11H20L21 15H17" stroke="#1B1B2F" stroke-width="1.4" stroke-linejoin="round"/><circle cx="7" cy="18" r="2.2" fill="#1B1B2F"/><circle cx="18" cy="18" r="2.2" fill="#1B1B2F"/></svg>
+          <div class="word">Keke<span>Yi</span></div>
+        </div>
+        <div class="map">
+          <div class="roads"></div>
+          <div class="pin a"><span>📍</span></div>
+        </div>
+        <div class="sub" style="font-weight:600; color:var(--ink);">Good afternoon, Abdulsamad</div>
+        <div class="card" style="display:flex; align-items:center; gap:10px;">
+          <div style="font-size:18px;">📍</div>
+          <div style="flex:1;">
+            <div style="font-size:13px; font-weight:600;">Where are you going?</div>
+            <div style="font-size:11.5px; color:var(--ink-soft);">Set pickup & destination</div>
+          </div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="btn btn-primary">Book a Keke</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 5. Set trip -->
+  <div class="frame-block">
+    <div class="frame-num">05 · SET TRIP</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body">
+        <div class="h1local">Where to?</div>
+        <div>
+          <div class="field-label">Pickup</div>
+          <div class="field filled">Sabon Gari Market</div>
+        </div>
+        <div>
+          <div class="field-label">Destination</div>
+          <div class="field filled">Kano Central Market</div>
+        </div>
+        <div class="map" style="height:120px;">
+          <div class="roads"></div>
+          <div class="route"></div>
+          <div class="pin a"><span>A</span></div>
+          <div class="pin b"><span>B</span></div>
+        </div>
+        <div class="note-strip">🔒 This is a private ride — your Keke won't pick up anyone else along the way.</div>
+        <div style="flex:1"></div>
+        <div class="btn btn-primary">Continue to Price</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 6. Set price -->
+  <div class="frame-block">
+    <div class="frame-num">06 · SET PRICE</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body">
+        <div class="h1local">Make an offer</div>
+        <div class="sub">Sabon Gari → Kano Central</div>
+        <div class="card fare-display">
+          <div class="amount">₦250</div>
+          <div class="range">Suggested range: ₦200 – ₦300</div>
+        </div>
+        <div class="row2">
+          <div class="btn btn-ghost btn-sm">− ₦50</div>
+          <div class="btn btn-ghost btn-sm">+ ₦50</div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="btn btn-primary">Find Drivers</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 7. Driver list -->
+  <div class="frame-block">
+    <div class="frame-num">07 · DRIVER LIST</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body">
+        <div class="h1local" style="font-size:18px;">Drivers near you</div>
+        <div class="sub">Offering ₦250 · sorted by distance</div>
+        <div class="driver-row">
+          <div class="avatar">IS</div>
+          <div class="info"><div class="name">Ibrahim S.</div><div class="meta"><span class="stars">★★★★★</span> · Green Keke</div></div>
+          <div class="dist">0.4km</div>
+        </div>
+        <div class="driver-row">
+          <div class="avatar">MU</div>
+          <div class="info"><div class="name">Musa U.</div><div class="meta"><span class="stars">★★★★☆</span> · Blue Keke</div></div>
+          <div class="dist">0.7km</div>
+        </div>
+        <div class="driver-row">
+          <div class="avatar">AB</div>
+          <div class="info"><div class="name">Aliyu B.</div><div class="meta"><span class="stars">★★★★★</span> · Yellow Keke</div></div>
+          <div class="dist">1.1km</div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="sub" style="text-align:center; font-size:11.5px;">Tap a driver to send your offer</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 8. Request sent -->
+  <div class="frame-block">
+    <div class="frame-num">08 · REQUEST SENT</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body" style="justify-content:center; align-items:center; text-align:center; gap:16px;">
+        <div class="avatar" style="width:64px; height:64px; font-size:22px;">IS</div>
+        <div>
+          <div class="h1local" style="font-size:18px;">Waiting for<br>Ibrahim to respond</div>
+          <div class="sub" style="margin-top:6px;">Your offer: ₦250</div>
+        </div>
+        <div class="badge wait">● Awaiting response</div>
+        <div style="flex:1"></div>
+        <div class="btn btn-outline-danger" style="width:100%;">Cancel Request</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 9. Declined / adjust -->
+  <div class="frame-block">
+    <div class="frame-num">09 · ADJUST OFFER</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body">
+        <div class="toast-banner">✕ Ibrahim declined — price too low</div>
+        <div class="card fare-display">
+          <div class="amount">₦250</div>
+          <div class="range">Try adjusting your offer</div>
+        </div>
+        <div class="row2">
+          <div class="btn btn-yellow btn-sm">+ ₦50</div>
+          <div class="btn btn-yellow btn-sm">+ ₦100</div>
+        </div>
+        <div class="divider"></div>
+        <div class="sub" style="font-weight:600; color:var(--ink);">Next nearest driver</div>
+        <div class="driver-row">
+          <div class="avatar">MU</div>
+          <div class="info"><div class="name">Musa U.</div><div class="meta"><span class="stars">★★★★☆</span> · Blue Keke</div></div>
+          <div class="dist">0.7km</div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="btn btn-primary">Send New Offer</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 10. Trip ongoing -->
+  <div class="frame-block">
+    <div class="frame-num">10 · TRIP ONGOING</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body">
+        <div class="map">
+          <div class="roads"></div>
+          <div class="route"></div>
+          <div class="pin b"><span>B</span></div>
+          <svg class="keke-dot" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="11" fill="#1B1B2F"/><rect x="6" y="10" width="9" height="5" rx="1.5" fill="#F2B705"/></svg>
+        </div>
+        <div class="card" style="display:flex; align-items:center; gap:10px;">
+          <div class="avatar">IS</div>
+          <div class="info">
+            <div class="name">Ibrahim S. <span class="badge ok" style="margin-left:4px;">Ongoing</span></div>
+            <div class="meta"><span class="stars">★★★★★</span> · Green Keke · KN-108-XY</div>
+          </div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="row2">
+          <div class="btn btn-ghost btn-sm">📞 Call Driver</div>
+          <div class="btn btn-outline-danger btn-sm">Report Issue</div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 11. Trip completed confirm -->
+  <div class="frame-block">
+    <div class="frame-num">11 · CONFIRM COMPLETION</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body" style="justify-content:center; align-items:center; text-align:center; gap:14px;">
+        <div style="font-size:38px;">✅</div>
+        <div class="h1local" style="font-size:19px;">Trip Completed</div>
+        <div class="sub">Sabon Gari → Kano Central Market</div>
+        <div class="card" style="width:100%;">
+          <div class="field-label">Amount to pay driver</div>
+          <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:24px;">💵 ₦250 <span style="font-size:12px; font-weight:500; color:var(--ink-soft);">cash</span></div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="btn btn-primary" style="width:100%;">Confirm & Continue</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 12. Rate -->
+  <div class="frame-block">
+    <div class="frame-num">12 · RATE TRIP</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body" style="justify-content:center; gap:16px;">
+        <div style="text-align:center;">
+          <div class="h1local" style="font-size:18px;">How was your<br>trip with Ibrahim?</div>
+        </div>
+        <div style="text-align:center;" class="stars big">☆ ☆ ☆ ☆ ☆</div>
+        <div>
+          <div class="field-label">Comment (optional)</div>
+          <div class="field">Add a note…</div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="btn btn-primary">Submit Rating</div>
+        <div class="btn-link">Skip</div>
+      </div>
+    </div></div>
+  </div>
+
+</div>
+</div>
+
+<!-- ============ DRIVER FLOW ============ -->
+<div class="flow-wrap" id="flow-driver">
+<div class="strip">
+
+  <!-- 1. Entry -->
+  <div class="frame-block">
+    <div class="frame-num">01 · CHOOSE ROLE</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body" style="justify-content:center; gap:22px;">
+        <div style="text-align:center;">
+          <svg class="keke-icon" style="margin:0 auto 14px;" width="56" height="56" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="9" width="14" height="7" rx="2" fill="#F2B705" stroke="#1B1B2F" stroke-width="1.4"/><path d="M17 11H20L21 15H17" stroke="#1B1B2F" stroke-width="1.4" stroke-linejoin="round"/><circle cx="7" cy="18" r="2.2" fill="#1B1B2F"/><circle cx="18" cy="18" r="2.2" fill="#1B1B2F"/><path d="M6 9L8 4H12L13 9" stroke="#1B1B2F" stroke-width="1.4" stroke-linejoin="round"/></svg>
+          <div class="h1local">Welcome to<br><span style="color:var(--terracotta)">KekeYi</span></div>
+          <div class="sub" style="margin-top:8px;">Get riders. Grow your income.</div>
+        </div>
+        <div class="role-pick">
+          <div class="role-card">
+            <div class="ricon">🧍</div>
+            <div><div class="rtitle">I'm a Rider</div><div class="rsub">Book Keke rides around Kano</div></div>
+          </div>
+          <div class="role-card sel">
+            <div class="ricon">🛺</div>
+            <div><div class="rtitle">I'm a Driver</div><div class="rsub">Get subscribed, get riders</div></div>
+          </div>
+        </div>
+        <div class="btn btn-primary">Continue</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 2. Sign up -->
+  <div class="frame-block">
+    <div class="frame-num">02 · SIGN UP</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body">
+        <div class="h1local">Create your<br>driver account</div>
+        <div>
+          <div class="field-label">Full name</div>
+          <div class="field filled">Ibrahim Sani</div>
+        </div>
+        <div>
+          <div class="field-label">Phone number</div>
+          <div class="field filled">0806 XXX XX45</div>
+        </div>
+        <div>
+          <div class="field-label">Email (optional)</div>
+          <div class="field">you@email.com</div>
+        </div>
+        <div>
+          <div class="field-label">NIN</div>
+          <div class="field">11-digit National ID</div>
+        </div>
+        <div>
+          <div class="field-label">Password</div>
+          <div class="field">••••••••</div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="btn btn-primary">Create Account</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 3. OTP -->
+  <div class="frame-block">
+    <div class="frame-num">03 · VERIFY OTP</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body" style="justify-content:center; gap:20px;">
+        <div style="text-align:center;">
+          <div class="h1local">Verify your<br>number</div>
+          <div class="sub" style="margin-top:6px;">Code sent to 0806 XXX XX45</div>
+        </div>
+        <div class="otp-boxes">
+          <div class="d">9</div><div class="d">0</div><div class="d">3</div><div class="d">5</div>
+        </div>
+        <div class="btn-link" style="text-decoration:none; color:var(--terracotta);">Resend code in 0:42</div>
+        <div class="btn btn-primary">Verify</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 4. Vehicle details -->
+  <div class="frame-block">
+    <div class="frame-num">04 · VEHICLE DETAILS</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body">
+        <div class="h1local">Your Keke</div>
+        <div>
+          <div class="field-label">Plate number</div>
+          <div class="field filled">KN-108-XY</div>
+        </div>
+        <div>
+          <div class="field-label">Color</div>
+          <div class="field filled">Green</div>
+        </div>
+        <div>
+          <div class="field-label">Model / year</div>
+          <div class="field filled">TVS King, 2021</div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="btn btn-primary">Continue</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 5. Documents -->
+  <div class="frame-block">
+    <div class="frame-num">05 · DOCUMENTS</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body">
+        <div class="h1local">Upload documents</div>
+        <div class="sub">We verify manually before you go live</div>
+        <div class="card" style="display:flex; align-items:center; gap:10px;">
+          <div style="font-size:18px;">🪪</div>
+          <div style="flex:1; font-size:12.5px; font-weight:600;">Driver's licence</div>
+          <div class="badge ok">Uploaded</div>
+        </div>
+        <div class="card" style="display:flex; align-items:center; gap:10px;">
+          <div style="font-size:18px;">🛺</div>
+          <div style="flex:1; font-size:12.5px; font-weight:600;">Vehicle particulars</div>
+          <div class="badge ok">Uploaded</div>
+        </div>
+        <div class="card" style="display:flex; align-items:center; gap:10px;">
+          <div style="font-size:18px;">📄</div>
+          <div style="flex:1; font-size:12.5px; font-weight:600;">Proof of ownership</div>
+          <div class="badge off">Pending</div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="btn btn-primary">Submit for Review</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 6. Subscribe -->
+  <div class="frame-block">
+    <div class="frame-num">06 · SUBSCRIBE</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body">
+        <div class="h1local">Stay visible<br>to riders</div>
+        <div class="sub">Subscribe monthly to appear in rider search and accept trips.</div>
+        <div class="card" style="text-align:center; border-color:var(--ink); background:var(--ink); color:#fff;">
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:var(--yellow); font-weight:700;">Monthly Plan</div>
+          <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:30px; margin-top:4px;">₦1,200<span style="font-size:13px; font-weight:500;">/mo</span></div>
+          <div style="font-size:11.5px; margin-top:4px; opacity:0.75;">Unlimited ride requests</div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="btn btn-yellow">Pay with Paystack</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 7. Dashboard -->
+  <div class="frame-block">
+    <div class="frame-num">07 · DASHBOARD</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body">
+        <div class="app-header">
+          <svg class="keke-mark" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="9" width="14" height="7" rx="2" fill="#F2B705" stroke="#1B1B2F" stroke-width="1.4"/><path d="M17 11H20L21 15H17" stroke="#1B1B2F" stroke-width="1.4" stroke-linejoin="round"/><circle cx="7" cy="18" r="2.2" fill="#1B1B2F"/><circle cx="18" cy="18" r="2.2" fill="#1B1B2F"/></svg>
+          <div class="word">Keke<span>Yi</span></div>
+          <div style="flex:1"></div>
+          <div class="badge ok">Subscribed</div>
+        </div>
+        <div class="card" style="display:flex; align-items:center; justify-content:space-between;">
+          <div>
+            <div style="font-weight:700; font-size:14px;">You're Offline</div>
+            <div class="sub" style="font-size:11.5px;">Go online to receive requests</div>
+          </div>
+          <div style="width:44px; height:24px; background:var(--line); border-radius:20px; position:relative;">
+            <div style="width:18px; height:18px; background:#fff; border-radius:50%; position:absolute; top:3px; left:3px; box-shadow:var(--shadow);"></div>
+          </div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-box"><div class="num">₦4,800</div><div class="lbl">Today</div></div>
+          <div class="stat-box"><div class="num">12</div><div class="lbl">Trips</div></div>
+          <div class="stat-box"><div class="num">★4.9</div><div class="lbl">Rating</div></div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="btn btn-yellow">Go Online</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 8. Incoming request -->
+  <div class="frame-block">
+    <div class="frame-num">08 · INCOMING REQUEST</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body">
+        <div class="pin-timer">⏱ 0:14</div>
+        <div class="h1local" style="font-size:18px; text-align:center;">New ride request</div>
+        <div class="card">
+          <div class="field-label">Destination</div>
+          <div style="font-weight:600; font-size:14px;">Kano Central Market</div>
+          <div class="divider" style="margin:10px 0;"></div>
+          <div class="field-label">Offer</div>
+          <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:24px;">₦250</div>
+        </div>
+        <div class="driver-row">
+          <div class="avatar">AY</div>
+          <div class="info"><div class="name">Abdulsamad Y.</div><div class="meta">Rider · 0.4km away</div></div>
+        </div>
+        <div class="note-strip">🔒 Private ride — no other pickups once accepted.</div>
+        <div style="flex:1"></div>
+        <div class="row2">
+          <div class="btn btn-outline-danger">Decline</div>
+          <div class="btn btn-primary">Accept</div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 9. Decline reason -->
+  <div class="frame-block">
+    <div class="frame-num">09 · DECLINE REASON</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body">
+        <div class="h1local" style="font-size:18px;">Why decline?</div>
+        <div class="sub">The rider will see this so they can adjust.</div>
+        <div class="card tight" style="border-color:var(--ink); background:#fff;">Price too low</div>
+        <div class="card tight">Too far from me</div>
+        <div class="card tight">Heading a different way</div>
+        <div class="card tight">Other</div>
+        <div style="flex:1"></div>
+        <div class="btn btn-primary">Send Decline</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 10. En route -->
+  <div class="frame-block">
+    <div class="frame-num">10 · EN ROUTE</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body">
+        <div class="map">
+          <div class="roads"></div>
+          <div class="route"></div>
+          <div class="pin a"><span>📍</span></div>
+          <svg class="keke-dot" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="11" fill="#1B1B2F"/><rect x="6" y="10" width="9" height="5" rx="1.5" fill="#F2B705"/></svg>
+        </div>
+        <div class="card" style="display:flex; align-items:center; gap:10px;">
+          <div class="avatar">AY</div>
+          <div class="info">
+            <div class="name">Abdulsamad Y.</div>
+            <div class="meta">Pickup: Sabon Gari Market · 6 min away</div>
+          </div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="row2">
+          <div class="btn btn-ghost btn-sm">📞 Call Rider</div>
+          <div class="btn btn-yellow btn-sm">I've Arrived</div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 11. At pickup -->
+  <div class="frame-block">
+    <div class="frame-num">11 · AT PICKUP POINT</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body">
+        <div class="badge wait" style="align-self:center;">● Waiting for rider</div>
+        <div class="pin-timer" style="justify-content:center; margin-top:4px;">⏱ Waited 2:10</div>
+        <div class="card" style="display:flex; align-items:center; gap:10px;">
+          <div class="avatar">AY</div>
+          <div class="info"><div class="name">Abdulsamad Y.</div><div class="meta">Sabon Gari Market</div></div>
+        </div>
+        <div class="btn btn-ghost">📞 Call Rider</div>
+        <div style="flex:1"></div>
+        <div class="btn btn-primary">Start Trip</div>
+        <div class="btn btn-outline-danger">Cancel — Rider No-Show</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 12. Trip ongoing -->
+  <div class="frame-block">
+    <div class="frame-num">12 · TRIP ONGOING</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body">
+        <div class="map">
+          <div class="roads"></div>
+          <div class="route"></div>
+          <div class="pin b"><span>B</span></div>
+          <svg class="keke-dot" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="11" fill="#1B1B2F"/><rect x="6" y="10" width="9" height="5" rx="1.5" fill="#F2B705"/></svg>
+        </div>
+        <div class="card">
+          <div style="font-weight:600; font-size:13.5px;">Trip to Kano Central Market</div>
+          <div class="badge ok" style="margin-top:6px;">Ongoing</div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="btn btn-primary">Complete Trip</div>
+        <div class="btn btn-outline-danger">Report Rider</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 13. Confirm completion -->
+  <div class="frame-block">
+    <div class="frame-num">13 · CONFIRM COMPLETION</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body" style="justify-content:center; align-items:center; text-align:center; gap:14px;">
+        <div style="font-size:38px;">✅</div>
+        <div class="h1local" style="font-size:19px;">Trip Completed</div>
+        <div class="sub">Sabon Gari → Kano Central Market</div>
+        <div class="card" style="width:100%;">
+          <div class="field-label">Amount collected</div>
+          <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:24px;">💵 ₦250 <span style="font-size:12px; font-weight:500; color:var(--ink-soft);">cash</span></div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="btn btn-primary" style="width:100%;">Confirm & Continue</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- 14. Trip complete stats -->
+  <div class="frame-block">
+    <div class="frame-num">14 · TRIP COMPLETE</div>
+    <div class="phone"><div class="screen">
+      <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+      <div class="screen-body" style="justify-content:center; gap:14px;">
+        <div style="text-align:center;">
+          <div class="h1local" style="font-size:18px;">Nice one, Ibrahim 🎉</div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-box"><div class="num">₦5,050</div><div class="lbl">Today</div></div>
+          <div class="stat-box"><div class="num">13</div><div class="lbl">Trips</div></div>
+        </div>
+        <div style="flex:1"></div>
+        <div class="btn btn-yellow">Go Online Again</div>
+        <div class="btn-link" style="color:var(--red);">⚠ Report this rider</div>
+      </div>
+    </div></div>
+  </div>
+
+</div>
+</div>
+
+<script>
+  function showFlow(name, btn) {
+    document.querySelectorAll('.flow-wrap').forEach(el => el.classList.remove('active'));
+    document.getElementById('flow-' + name).classList.add('active');
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    btn.classList.add('active');
+  }
+</script>
+
+</body>
+</html>
